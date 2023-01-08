@@ -28,21 +28,27 @@ class custom_exception : public std::exception
 
 namespace geoio {
 
-struct driver
+class driver
 {
-    string short_name;
-    string long_name;
-    string extension;
+  protected:
+    string _short;
+    string _long;
+    string _ext;
 
+  public:
     driver()
-      : short_name("")
-      , long_name("")
-      , extension(""){};
+      : _short("")
+      , _long("")
+      , _ext(""){};
 
     driver(string s, string l, string e)
-      : short_name(s)
-      , long_name(l)
-      , extension(e){};
+      : _short(s)
+      , _long(l)
+      , _ext(e){};
+
+    string       short_name() { return this->_short; }
+    string       long_name() { return this->_long; }
+    string       extension() { return this->_ext; }
 
     virtual void info() const
     {
@@ -51,14 +57,14 @@ struct driver
         );
     };
 
-    virtual model& read() const
+    virtual bool read(string, model&) const
     {
         throw custom_exception(
           "this virtual driver class does not implement the read() method."
         );
     };
 
-    virtual void write(model&) const
+    virtual bool write(string, model&) const
     {
         throw custom_exception(
           "this virtual driver class does not implement the write() method."
@@ -66,18 +72,18 @@ struct driver
     };
 };
 
-struct vector_driver : driver
+class driver_vector : public driver
 {
-    virtual void    info() const;
-    virtual vector& read() const;
-    virtual void    write(vector&) const;
+    virtual void info() const;
+    virtual bool read(string, vector&) const;
+    virtual bool write(string, vector&) const;
 };
 
-struct raster_driver : driver
+class driver_raster : public driver
 {
-    virtual void    info() const;
-    virtual raster& read() const;
-    virtual void    write(raster&) const;
+    virtual void info() const;
+    virtual bool read(string, raster&) const;
+    virtual bool write(string, raster&) const;
 };
 
 } // namespace geoio
